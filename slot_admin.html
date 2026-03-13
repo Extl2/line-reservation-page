@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>予約枠管理ページ</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --sub: #6b7280;
+      --line: #d9e2ec;
+      --accent: #06c755;
+      --accent-dark: #05a847;
+      --danger: #d92d20;
+      --warn: #b54708;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 18px; }
+    .hero {
+      background: linear-gradient(135deg, #06c755 0%, #2fd56f 100%);
+      color: #fff;
+      border-radius: 22px;
+      padding: 22px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 14px 30px rgba(6, 199, 85, 0.18);
+    }
+    .hero h1 { margin: 0 0 8px; font-size: 30px; line-height: 1.3; }
+    .hero p { margin: 0; font-size: 14px; opacity: 0.96; }
+    .grid {
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid #e8eef4;
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(16, 24, 40, 0.06);
+    }
+    h2 { font-size: 18px; margin: 0 0 14px; }
+    label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 700; }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 15px;
+      outline: none;
+      background: #fff;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(6, 199, 85, 0.12);
+    }
+    .field { margin-bottom: 14px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .btn, .btn-sub, .btn-danger, .btn-ghost {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .2s;
+    }
+    .btn { background: var(--accent); color: #fff; box-shadow: 0 10px 20px rgba(6, 199, 85, 0.18); }
+    .btn:hover { background: var(--accent-dark); }
+    .btn-sub { background: #eef8f1; color: #08763a; border: 1px solid #ccefd8; }
+    .btn-ghost { background: #fff; color: var(--text); border: 1px solid var(--line); }
+    .btn-danger { background: #fff3f2; color: var(--danger); border: 1px solid #f7b4ae; }
+    .help { font-size: 12px; color: var(--sub); margin-top: 6px; }
+    .status {
+      display: none;
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .status.ok { display: block; background: #ecfdf3; border: 1px solid #abefc6; color: #067647; }
+    .status.err { display: block; background: #fff4f3; border: 1px solid #f7b4ae; color: #b42318; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+    .date-card {
+      border: 1px solid #e8eef4;
+      border-radius: 16px;
+      padding: 14px;
+      background: #fff;
+      margin-bottom: 12px;
+    }
+    .date-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .date-title { font-weight: 800; font-size: 16px; }
+    .slot-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .slot-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 10px;
+      border-radius: 999px;
+      border: 1px solid #d8e4d8;
+      background: #f3fcf5;
+      color: #08763a;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .chip-del {
+      border: none;
+      background: transparent;
+      color: #08763a;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1;
+      padding: 0;
+    }
+    .empty {
+      padding: 14px;
+      border: 1px dashed #cdd7e2;
+      border-radius: 14px;
+      color: var(--sub);
+      font-size: 14px;
+      background: #fafcfe;
+    }
+    textarea.code {
+      min-height: 240px;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .mini { font-size: 12px; color: var(--sub); }
+    .warning {
+      background: #fffaeb;
+      color: var(--warn);
+      border: 1px solid #fedf89;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+    .api-box {
+      border: 1px solid #e8eef4;
+      background: #fafcfe;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .link-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+    @media (max-width: 520px) {
+      .row { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 24px; }
+      .date-head { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>先生側用 予約枠管理ページ</h1>
+      <p>このページから <strong>available_slots.json</strong> をGitHubへ直接更新できます。更新後、患者さん用予約フォームは自動で新しい枠を読み込みます。</p>
+    </div>
+
+    <div class="grid">
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <h2>GitHub接続設定</h2>
+          <div class="api-box">
+            <div class="field">
+              <label for="repoOwner">GitHubユーザー名</label>
+              <input id="repoOwner" type="text" placeholder="例）extl2" />
+            </div>
+            <div class="field">
+              <label for="repoName">リポジトリ名</label>
+              <input id="repoName" type="text" placeholder="例）mounjaro_flow" />
+            </div>
+            <div class="field">
+              <label for="branchName">ブランチ名</label>
+              <input id="branchName" type="text" value="main" />
+            </div>
+            <div class="field">
+              <label for="filePath">予約枠JSONのパス</label>
+              <input id="filePath" type="text" value="available_slots.json" />
+              <div class="help">予約フォームと同じ階層なら <span class="mono">available_slots.json</span> のままでOKです。</div>
+            </div>
+            <div class="field">
+              <label for="githubToken">Fine-grained Personal Access Token</label>
+              <input id="githubToken" type="password" placeholder="GitHubトークンを貼付" autocomplete="off" />
+              <div class="help">Contents: Read and write 権限が必要です。このページではトークンはブラウザ保存しません。</div>
+            </div>
+            <div class="link-row">
+              <button id="loadFromGithubBtn" class="btn-ghost" type="button">GitHubから読み込む</button>
+              <button id="saveToGithubBtn" class="btn" type="button">GitHubへ保存する</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>予約枠を追加</h2>
+          <div class="field">
+            <label for="slotDate">日付</label>
+            <input id="slotDate" type="date" />
+          </div>
+          <div class="field row">
+            <div>
+              <label for="startTime">開始時間</label>
+              <input id="startTime" type="time" value="10:00" step="1800" />
+            </div>
+            <div>
+              <label for="endTime">終了時間</label>
+              <input id="endTime" type="time" value="11:00" step="1800" />
+            </div>
+          </div>
+          <div class="field">
+            <button id="addSlotBtn" class="btn-sub" type="button">この枠を追加する</button>
+            <div class="help">例：10:00〜11:00 のように1枠ずつ追加します。</div>
+          </div>
+          <div class="field">
+            <label for="quickTemplate">よく使う枠をまとめて追加</label>
+            <select id="quickTemplate">
+              <option value="">テンプレートを選択してください</option>
+              <option value="morning">午前枠（10-13時）</option>
+              <option value="afternoon">午後枠（13-17時）</option>
+              <option value="evening">夕方枠（17-20時）</option>
+              <option value="full">終日枠（10-20時）</option>
+            </select>
+          </div>
+          <div class="field row">
+            <div>
+              <label for="templateUnit">単位</label>
+              <select id="templateUnit">
+                <option value="60">60分</option>
+                <option value="30">30分</option>
+              </select>
+            </div>
+            <div style="display:flex;align-items:end;">
+              <button id="applyTemplateBtn" class="btn-sub" type="button" style="width:100%;">テンプレート追加</button>
+            </div>
+          </div>
+          <div class="field">
+            <button id="clearPastBtn" class="btn-ghost" type="button">過去の日付を削除</button>
+          </div>
+          <div class="field">
+            <button id="clearAllBtn" class="btn-danger" type="button">すべての予約枠を削除</button>
+          </div>
+          <div id="statusBox" class="status"></div>
+          <div class="warning">
+            GitHubへ保存すると、患者さん側の予約ページは次回読み込み時に自動で最新の枠へ切り替わります。
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <h2>現在の開放枠一覧</h2>
+          <div class="toolbar">
+            <button id="sortBtn" class="btn-ghost" type="button">日付順に整える</button>
+            <button id="copyJsonBtn" class="btn-sub" type="button">JSONをコピー</button>
+          </div>
+          <div id="slotListWrap"></div>
+        </div>
+
+        <div class="card">
+          <h2>available_slots.json の中身</h2>
+          <div class="mini">GitHubに保存される内容です。必要なら手動でも編集できます。</div>
+          <div style="height:10px"></div>
+          <textarea id="exportArea" class="code"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'clinic_available_slots_admin_settings_v1';
+
+    const repoOwner = document.getElementById('repoOwner');
+    const repoName = document.getElementById('repoName');
+    const branchName = document.getElementById('branchName');
+    const filePath = document.getElementById('filePath');
+    const githubToken = document.getElementById('githubToken');
+    const loadFromGithubBtn = document.getElementById('loadFromGithubBtn');
+    const saveToGithubBtn = document.getElementById('saveToGithubBtn');
+
+    const slotDate = document.getElementById('slotDate');
+    const startTime = document.getElementById('startTime');
+    const endTime = document.getElementById('endTime');
+    const addSlotBtn = document.getElementById('addSlotBtn');
+    const quickTemplate = document.getElementById('quickTemplate');
+    const templateUnit = document.getElementById('templateUnit');
+    const applyTemplateBtn = document.getElementById('applyTemplateBtn');
+    const clearPastBtn = document.getElementById('clearPastBtn');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    const statusBox = document.getElementById('statusBox');
+    const slotListWrap = document.getElementById('slotListWrap');
+    const exportArea = document.getElementById('exportArea');
+    const copyJsonBtn = document.getElementById('copyJsonBtn');
+    const sortBtn = document.getElementById('sortBtn');
+
+    let slots = {};
+
+    function todayString() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    slotDate.min = todayString();
+    slotDate.value = todayString();
+
+    function saveSettings() {
+      const data = {
+        repoOwner: repoOwner.value.trim(),
+        repoName: repoName.value.trim(),
+        branchName: branchName.value.trim(),
+        filePath: filePath.value.trim()
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function loadSettings() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        repoOwner.value = data.repoOwner || '';
+        repoName.value = data.repoName || '';
+        branchName.value = data.branchName || 'main';
+        filePath.value = data.filePath || 'available_slots.json';
+      } catch {}
+    }
+
+    [repoOwner, repoName, branchName, filePath].forEach(el => {
+      el.addEventListener('input', saveSettings);
+    });
+
+    function showStatus(message, type = 'ok') {
+      statusBox.className = `status ${type}`;
+      statusBox.textContent = message;
+      setTimeout(() => {
+        statusBox.className = 'status';
+        statusBox.textContent = '';
+      }, 2600);
+    }
+
+    function timeLabel(start, end) {
+      return `${start}〜${end}`;
+    }
+
+    function parseMinutes(t) {
+      const [h, m] = t.split(':').map(Number);
+      return h * 60 + m;
+    }
+
+    function formatTime(minutes) {
+      const h = String(Math.floor(minutes / 60)).padStart(2, '0');
+      const m = String(minutes % 60).padStart(2, '0');
+      return `${h}:${m}`;
+    }
+
+    function sortDateSlots(date) {
+      if (!slots[date]) return;
+      slots[date].sort((a, b) => parseMinutes(a.split('〜')[0]) - parseMinutes(b.split('〜')[0]));
+    }
+
+    function cleanupEmptyDates() {
+      Object.keys(slots).forEach(date => {
+        if (!Array.isArray(slots[date]) || slots[date].length === 0) delete slots[date];
+      });
+    }
+
+    function addSlot(date, start, end) {
+      if (!date) return showStatus('日付を選択してください。', 'err');
+      if (!start || !end) return showStatus('開始時間と終了時間を入力してください。', 'err');
+      if (parseMinutes(start) >= parseMinutes(end)) return showStatus('終了時間は開始時間より後にしてください。', 'err');
+
+      const label = timeLabel(start, end);
+      if (!slots[date]) slots[date] = [];
+      if (slots[date].includes(label)) return showStatus('その予約枠はすでに登録されています。', 'err');
+
+      slots[date].push(label);
+      sortDateSlots(date);
+      cleanupEmptyDates();
+      renderAll();
+      showStatus(`${date} ${label} を追加しました。`);
+    }
+
+    function removeSlot(date, label) {
+      if (!slots[date]) return;
+      slots[date] = slots[date].filter(item => item !== label);
+      cleanupEmptyDates();
+      renderAll();
+      showStatus(`${date} ${label} を削除しました。`);
+    }
+
+    function removeDate(date) {
+      delete slots[date];
+      renderAll();
+      showStatus(`${date} の枠をすべて削除しました。`);
+    }
+
+    function clearPastDates() {
+      const today = todayString();
+      Object.keys(slots).forEach(date => {
+        if (date < today) delete slots[date];
+      });
+      renderAll();
+      showStatus('過去の日付を削除しました。');
+    }
+
+    function sortAllDates() {
+      const sorted = {};
+      Object.keys(slots).sort().forEach(date => {
+        sorted[date] = [...slots[date]].sort((a, b) => parseMinutes(a.split('〜')[0]) - parseMinutes(b.split('〜')[0]));
+      });
+      slots = sorted;
+      renderAll();
+      showStatus('日付順に整えました。');
+    }
+
+    function buildTemplate(type, unit) {
+      const templates = {
+        morning: ['10:00', '13:00'],
+        afternoon: ['13:00', '17:00'],
+        evening: ['17:00', '20:00'],
+        full: ['10:00', '20:00']
+      };
+      const range = templates[type];
+      if (!range) return [];
+      let start = parseMinutes(range[0]);
+      const end = parseMinutes(range[1]);
+      const step = Number(unit);
+      const labels = [];
+      while (start + step <= end) {
+        labels.push(timeLabel(formatTime(start), formatTime(start + step)));
+        start += step;
+      }
+      return labels;
+    }
+
+    function applyTemplate() {
+      const date = slotDate.value;
+      const type = quickTemplate.value;
+      const unit = templateUnit.value;
+      if (!date) return showStatus('先に日付を選択してください。', 'err');
+      if (!type) return showStatus('テンプレートを選択してください。', 'err');
+
+      if (!slots[date]) slots[date] = [];
+      const labels = buildTemplate(type, unit);
+      const before = slots[date].length;
+      labels.forEach(label => {
+        if (!slots[date].includes(label)) slots[date].push(label);
+      });
+      sortDateSlots(date);
+      cleanupEmptyDates();
+      renderAll();
+      const added = slots[date] ? slots[date].length - before : 0;
+      if (added === 0) showStatus('追加できる新しい枠はありませんでした。', 'err');
+      else showStatus(`${date} に ${added} 枠追加しました。`);
+    }
+
+    function toPrettyJson() {
+      const sorted = {};
+      Object.keys(slots).sort().forEach(date => {
+        sorted[date] = [...slots[date]].sort((a, b) => parseMinutes(a.split('〜')[0]) - parseMinutes(b.split('〜')[0]));
+      });
+      return JSON.stringify(sorted, null, 2);
+    }
+
+    function renderExport() {
+      exportArea.value = toPrettyJson();
+    }
+
+    function renderList() {
+      const dates = Object.keys(slots).sort();
+      if (dates.length === 0) {
+        slotListWrap.innerHTML = '<div class="empty">まだ予約枠がありません。左側から日付と時間を追加してください。</div>';
+        return;
+      }
+      slotListWrap.innerHTML = '';
+      dates.forEach(date => {
+        const card = document.createElement('div');
+        card.className = 'date-card';
+
+        const head = document.createElement('div');
+        head.className = 'date-head';
+
+        const title = document.createElement('div');
+        title.className = 'date-title';
+        title.textContent = `${date}（${slots[date].length}枠）`;
+
+        const actions = document.createElement('div');
+        const delDateBtn = document.createElement('button');
+        delDateBtn.className = 'btn-danger';
+        delDateBtn.type = 'button';
+        delDateBtn.textContent = 'この日を削除';
+        delDateBtn.addEventListener('click', () => {
+          if (confirm(`${date} の枠をすべて削除しますか？`)) removeDate(date);
+        });
+        actions.appendChild(delDateBtn);
+
+        head.appendChild(title);
+        head.appendChild(actions);
+
+        const list = document.createElement('div');
+        list.className = 'slot-list';
+        [...slots[date]].sort((a, b) => parseMinutes(a.split('〜')[0]) - parseMinutes(b.split('〜')[0]))
+          .forEach(label => {
+            const chip = document.createElement('div');
+            chip.className = 'slot-chip';
+            chip.innerHTML = `<span>${label}</span>`;
+            const del = document.createElement('button');
+            del.type = 'button';
+            del.className = 'chip-del';
+            del.textContent = '×';
+            del.addEventListener('click', () => removeSlot(date, label));
+            chip.appendChild(del);
+            list.appendChild(chip);
+          });
+
+        card.appendChild(head);
+        card.appendChild(list);
+        slotListWrap.appendChild(card);
+      });
+    }
+
+    function renderAll() {
+      renderList();
+      renderExport();
+    }
+
+    async function copyText(text, successMessage) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showStatus(successMessage);
+      } catch {
+        showStatus('コピーできませんでした。手動でコピーしてください。', 'err');
+      }
+    }
+
+    async function githubRequest(url, options = {}) {
+      const token = githubToken.value.trim();
+      if (!token) throw new Error('GitHubトークンを入力してください。');
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          'Accept': 'application/vnd.github+json',
+          'Authorization': `Bearer ${token}`,
+          'X-GitHub-Api-Version': '2022-11-28',
+          ...(options.headers || {})
+        }
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`GitHub APIエラー: ${response.status} ${text}`);
+      }
+      return response.json();
+    }
+
+    function getRepoConfig() {
+      const owner = repoOwner.value.trim();
+      const repo = repoName.value.trim();
+      const branch = branchName.value.trim() || 'main';
+      const path = filePath.value.trim() || 'available_slots.json';
+      if (!owner || !repo) throw new Error('GitHubユーザー名とリポジトリ名を入力してください。');
+      saveSettings();
+      return { owner, repo, branch, path };
+    }
+
+    async function loadFromGithub() {
+      try {
+        const { owner, repo, branch, path } = getRepoConfig();
+        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${encodeURIComponent(branch)}`;
+        const data = await githubRequest(url, { method: 'GET' });
+        const content = atob(data.content.replace(/\n/g, ''));
+        slots = JSON.parse(content);
+        renderAll();
+        showStatus('GitHubから予約枠を読み込みました。');
+      } catch (error) {
+        showStatus(error.message, 'err');
+      }
+    }
+
+    async function saveToGithub() {
+      try {
+        const { owner, repo, branch, path } = getRepoConfig();
+        const content = exportArea.value.trim();
+        if (!content) throw new Error('保存するJSONが空です。');
+        JSON.parse(content);
+
+        let sha;
+        const getUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${encodeURIComponent(branch)}`;
+        try {
+          const current = await githubRequest(getUrl, { method: 'GET' });
+          sha = current.sha;
+        } catch (error) {
+          sha = undefined;
+        }
+
+        const body = {
+          message: 'Update available_slots.json from admin page',
+          content: btoa(unescape(encodeURIComponent(content))),
+          branch
+        };
+        if (sha) body.sha = sha;
+
+        const putUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+        await githubRequest(putUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        slots = JSON.parse(content);
+        renderAll();
+        showStatus('GitHubへ保存しました。予約フォームに自動反映されます。');
+      } catch (error) {
+        showStatus(error.message, 'err');
+      }
+    }
+
+    addSlotBtn.addEventListener('click', () => addSlot(slotDate.value, startTime.value, endTime.value));
+    applyTemplateBtn.addEventListener('click', applyTemplate);
+    clearPastBtn.addEventListener('click', clearPastDates);
+    sortBtn.addEventListener('click', sortAllDates);
+    clearAllBtn.addEventListener('click', () => {
+      if (!confirm('すべての予約枠を削除しますか？')) return;
+      slots = {};
+      renderAll();
+      showStatus('すべての予約枠を削除しました。');
+    });
+    copyJsonBtn.addEventListener('click', () => copyText(exportArea.value, 'JSONをコピーしました。'));
+    loadFromGithubBtn.addEventListener('click', loadFromGithub);
+    saveToGithubBtn.addEventListener('click', saveToGithub);
+
+    exportArea.addEventListener('input', () => {
+      try {
+        const parsed = JSON.parse(exportArea.value);
+        slots = parsed && typeof parsed === 'object' ? parsed : {};
+        renderList();
+      } catch {}
+    });
+
+    loadSettings();
+    renderAll();
+  </script>
+</body>
+</html>
