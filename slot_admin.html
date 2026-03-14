@@ -577,8 +577,8 @@
     }
 
     function getRepoConfig() {
-      const owner = repoOwner.value.trim()|| 'Extl2';
-      const repo = repoName.value.trim()|| 'line-reservation-page';
+      const owner = repoOwner.value.trim();
+      const repo = repoName.value.trim();
       const branch = branchName.value.trim() || 'main';
       const path = filePath.value.trim() || 'available_slots.json';
       if (!owner || !repo) throw new Error('GitHubユーザー名とリポジトリ名を入力してください。');
