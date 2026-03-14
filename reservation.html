@@ -540,5 +540,21 @@
     setDateLimit();
     loadAvailableSlots();
   </script>
+<script>
+const SLOT_JSON_URL = "./available_slots.json";
+
+async function loadSlots() {
+  try {
+    const res = await fetch(SLOT_JSON_URL, { cache: "no-store" });
+    if (!res.ok) throw new Error("JSON読込失敗: " + res.status);
+    const slots = await res.json();
+    console.log("slots=",slots);
+  } catch (e) {
+    console.error(e);
+    alert("予約枠の読込に失敗しました: " + e.message);
+  }
+}
+loadSlots();
+</script>  
 </body>
 </html>
