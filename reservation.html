@@ -540,56 +540,5 @@
     setDateLimit();
     loadAvailableSlots();
   </script>
-const SLOT_JSON_URL = "./available_slots.json?v=" + Date.now();
-
-async function loadSlots() {
-  try {
-    const res = await fetch(SLOT_JSON_URL, { cache: "no-store" });
-    if (!res.ok) throw new Error("JSON読込失敗: " + res.status);
-    const slots = await res.json();
-    console.log("slots=", slots);
-
-    const dateSelect = document.getElementById("dateSelect");
-    const timeSelect = document.getElementById("timeSelect");
-    const statusEl = document.getElementById("slotStatus");
-
-    if (statusEl) statusEl.textContent = "予約枠を読み込みました。";
-
-    dateSelect.innerHTML = '<option value="">日付を選択してください</option>';
-    timeSelect.innerHTML = '<option value="">先に日付を選択してください</option>';
-
-    Object.keys(slots).forEach(date => {
-      const opt = document.createElement("option");
-      opt.value = date;
-      opt.textContent = date;
-      dateSelect.appendChild(opt);
-    });
-
-    dateSelect.addEventListener("change", () => {
-      const selectedDate = dateSelect.value;
-      timeSelect.innerHTML = "";
-
-      if (!selectedDate || !slots[selectedDate] || slots[selectedDate].length === 0) {
-        timeSelect.innerHTML = '<option value="">予約可能時間がありません</option>';
-        return;
-      }
-
-      timeSelect.innerHTML = '<option value="">時間を選択してください</option>';
-      slots[selectedDate].forEach(time => {
-        const opt = document.createElement("option");
-        opt.value = time;
-        opt.textContent = time;
-        timeSelect.appendChild(opt);
-      });
-    });
-
-  } catch (e) {
-    console.error(e);
-    alert("予約枠の読込に失敗しました: " + e.message);
-  }
-}
-
-document.addEventListener("DOMContentLoaded", loadSlots);
-</script>  
 </body>
 </html>
