@@ -240,8 +240,7 @@
               <option value="morning">午前枠（10-13時）</option>
               <option value="afternoon">午後枠（13-17時）</option>
               <option value="evening">夕方枠（17-20時）</option>
-              <option value="evening">夜間枠（20-23時）</option>
-              <option value="full">終日枠（10-23時）</option>
+              <option value="full">終日枠（10-20時）</option>
             </select>
           </div>
           <div class="field row">
@@ -443,8 +442,7 @@
         morning: ['10:00', '13:00'],
         afternoon: ['13:00', '17:00'],
         evening: ['17:00', '20:00'],
-        night: ['20:00', '23:00']
-        full: ['10:00', '23:00']
+        full: ['10:00', '20:00']
       };
       const range = templates[type];
       if (!range) return [];
