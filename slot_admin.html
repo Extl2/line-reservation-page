@@ -363,7 +363,7 @@
     }
 
     function timeLabel(start, end) {
-      return `${start}〜${end}`;
+      return `${start}-${end}`;
     }
 
     function parseMinutes(t) {
@@ -379,7 +379,7 @@
 
     function sortDateSlots(date) {
       if (!slots[date]) return;
-      slots[date].sort((a, b) => parseMinutes(a.split('〜')[0]) - parseMinutes(b.split('〜')[0]));
+      slots[date].sort((a, b) => parseMinutes(a.split('-')[0]) - parseMinutes(b.split('-')[0]));
     }
 
     function cleanupEmptyDates() {
@@ -430,7 +430,7 @@
     function sortAllDates() {
       const sorted = {};
       Object.keys(slots).sort().forEach(date => {
-        sorted[date] = [...slots[date]].sort((a, b) => parseMinutes(a.split('〜')[0]) - parseMinutes(b.split('〜')[0]));
+        sorted[date] = [...slots[date]].sort((a, b) => parseMinutes(a.split('-')[0]) - parseMinutes(b.split('-')[0]));
       });
       slots = sorted;
       renderAll();
@@ -481,7 +481,7 @@
     function toPrettyJson() {
       const sorted = {};
       Object.keys(slots).sort().forEach(date => {
-        sorted[date] = [...slots[date]].sort((a, b) => parseMinutes(a.split('〜')[0]) - parseMinutes(b.split('〜')[0]));
+        sorted[date] = [...slots[date]].sort((a, b) => parseMinutes(a.split('-')[0]) - parseMinutes(b.split('-')[0]));
       });
       return JSON.stringify(sorted, null, 2);
     }
@@ -523,7 +523,7 @@
 
         const list = document.createElement('div');
         list.className = 'slot-list';
-        [...slots[date]].sort((a, b) => parseMinutes(a.split('〜')[0]) - parseMinutes(b.split('〜')[0]))
+        [...slots[date]].sort((a, b) => parseMinutes(a.split('-')[0]) - parseMinutes(b.split('-')[0]))
           .forEach(label => {
             const chip = document.createElement('div');
             chip.className = 'slot-chip';
