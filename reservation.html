@@ -299,7 +299,7 @@
 <body>
   <div class="wrap">
     <div class="hero">
-      <div class="badge">LINEから簡単予約</div>
+      <div class="badge">簡単予約</div>
       <h1>マンジャロオンライン外来｜中央区オンライン医療ダイエット<br>ご予約フォーム</h1>
       <p>必要事項をご入力ください。</p>
     </div>
@@ -316,27 +316,9 @@
           <label class="required" for="name">お名前</label>
           <input id="name" name="お名前" type="text" placeholder="例）山田 花子" required />
         </div>
-
-        <div class="grid-2">
-          <div>
-            <label class="required" for="tel">電話番号</label>
-            <input id="tel" name="電話番号" type="tel" inputmode="tel" placeholder="例）09012345678" required />
-          </div>
-          <div>
             <label class="required" for="email">メールアドレス</label>
             <input id="email" name="メールアドレス" type="email" placeholder="例）sample@example.com" required />
           </div>
-        </div>
-
-        <div>
-          <label class="required" for="menu">ご希望メニュー</label>
-          <select id="menu" name="ご希望メニュー" required>
-            <option value="">選択してください</option>
-            <option value="初診予約">初診予約</option>
-            <option value="再診予約">再診予約</option>
-            <option value="その他">その他</option>
-          </select>
-        </div>
 
         <div class="slot-box">
           <label class="required" for="date">初診の予約日時</label>
@@ -353,12 +335,6 @@
           <input type="hidden" id="selectedDate" name="予約日" required />
           <input type="hidden" id="selectedTime" name="予約時間" required />
           <input type="hidden" id="selectedDatetimeLabel" name="予約日時" required />
-        </div>
-
-        <div>
-          <label for="note">ご相談内容・備考</label>
-          <textarea id="note" name="ご相談内容・備考" placeholder="例）オンライン診療希望、現在服用中の薬、確認したいこと等"></textarea>
-          <div class="help">症状やご希望がある場合はこちらにご記入ください。</div>
         </div>
 
         <label class="checkbox">
