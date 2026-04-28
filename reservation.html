@@ -312,14 +312,6 @@
       </div>
 
       <form id="reservationForm" action="https://formspree.io/f/mgonvroj" method="POST">
-        <div>
-          <label class="required" for="name">お名前</label>
-          <input id="name" name="お名前" type="text" placeholder="例）山田 花子" required />
-        </div>
-            <label class="required" for="email">メールアドレス</label>
-            <input id="email" name="メールアドレス" type="email" placeholder="例）sample@example.com" required />
-          </div>
-
         <div class="slot-box">
           <label class="required" for="date">初診の予約日時</label>
           <input id="date" type="date" required />
@@ -336,7 +328,13 @@
           <input type="hidden" id="selectedTime" name="予約時間" required />
           <input type="hidden" id="selectedDatetimeLabel" name="予約日時" required />
         </div>
-
+        <div>
+          <label class="required" for="name">お名前</label>
+          <input id="name" name="お名前" type="text" placeholder="例）山田 花子" required />
+        </div>
+            <label class="required" for="email">メールアドレス</label>
+            <input id="email" name="メールアドレス" type="email" placeholder="例）sample@example.com" required />
+          </div>
         <label class="checkbox">
           <input type="checkbox" name="個人情報同意" required />
           <span>個人情報の取扱いに同意のうえ送信します。</span>
