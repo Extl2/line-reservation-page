@@ -186,11 +186,11 @@
           <div class="api-box">
             <div class="field">
               <label for="repoOwner">GitHubユーザー名</label>
-              <input id="repoOwner" type="text" placeholder="例）extl2" />
+              <input id="repoOwner" type="text" value="Extl2" placeholder="例）Extl2" />
             </div>
             <div class="field">
               <label for="repoName">リポジトリ名</label>
-              <input id="repoName" type="text" placeholder="例）mounjaro_flow" />
+              <input id="repoName" type="text" value="line-reservation-page" placeholder="例）line-reservation-page" />
             </div>
             <div class="field">
               <label for="branchName">ブランチ名</label>
@@ -291,7 +291,7 @@
   </div>
 
   <script>
-    const STORAGE_KEY = 'clinic_available_slots_admin_settings_v1';
+    const STORAGE_KEY = 'clinic_available_slots_admin_settings_v2';
 
     const repoOwner = document.getElementById('repoOwner');
     const repoName = document.getElementById('repoName');
@@ -344,8 +344,8 @@
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return;
         const data = JSON.parse(raw);
-        repoOwner.value = data.repoOwner || '';
-        repoName.value = data.repoName || '';
+        repoOwner.value = data.repoOwner || 'Extl2';
+        repoName.value = data.repoName || 'line-reservation-page';
         branchName.value = data.branchName || 'main';
         filePath.value = data.filePath || 'available_slots.json';
       } catch {}
